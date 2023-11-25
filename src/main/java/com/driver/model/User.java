@@ -12,7 +12,7 @@ public class User {
     private String name;
     private String phoneNumber;
     private String password;
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Reservation> reservationList = new ArrayList<>();
 
     public User() {

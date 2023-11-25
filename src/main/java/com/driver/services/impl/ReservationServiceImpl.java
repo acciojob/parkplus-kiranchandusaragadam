@@ -39,10 +39,10 @@ public class ReservationServiceImpl implements ReservationService {
         for(Spot curSpot : spotList){
             if(!curSpot.getOccupied()){
                 int currTotal = 0;
-                if(numberOfWheels == 2){
+                if(numberOfWheels <= 2){
                     currTotal = timeInHours * curSpot.getPricePerHour();
                 }
-                else if(numberOfWheels == 4 && !curSpot.getSpotType().toString().equals("TWO_WHEELER")){
+                else if(numberOfWheels <= 4 && !curSpot.getSpotType().toString().equals("TWO_WHEELER")){
                     currTotal = timeInHours * curSpot.getPricePerHour();
                 }
                 else if(numberOfWheels > 4 && curSpot.getSpotType().toString().equals("OTHERS")){
@@ -69,7 +69,9 @@ public class ReservationServiceImpl implements ReservationService {
         user.getReservationList().add(reservation);
         spot.getReservationList().add(reservation);
 
-        reservationRepository3.save(reservation);
+        spotRepository3.save(spot);
+        userRepository3.save(user);
+
         return reservation;
     }
 }
