@@ -23,6 +23,53 @@ public class ReservationServiceImpl implements ReservationService {
     ParkingLotRepository parkingLotRepository3;
     @Override
     public Reservation reserveSpot(Integer userId, Integer parkingLotId, Integer timeInHours, Integer numberOfWheels) throws Exception {
+        // get user
+        User user = userRepository3.findById(userId).orElse(null);
+        // get parking lot
+        ParkingLot parkingLot = parkingLotRepository3.findById(parkingLotId).orElse(null);
 
+        if(user == null || parkingLot == null){
+            throw new Exception("Cannot make reservation");
+        }
+        // get the spot as per given criteria
+        List<Spot> spotList = parkingLot.getSpotList();
+        Spot spot = null;
+        int totalPrice = Integer.MAX_VALUE;
+
+        for(Spot curSpot : spotList){
+            if(!curSpot.getOccupied()){
+                int currTotal = 0;
+                if(numberOfWheels == 2){
+                    currTotal = timeInHours * curSpot.getPricePerHour();
+                }
+                else if(numberOfWheels == 4 && !curSpot.getSpotType().toString().equals("TWO_WHEELER")){
+                    currTotal = timeInHours * curSpot.getPricePerHour();
+                }
+                else if(numberOfWheels > 4 && curSpot.getSpotType().toString().equals("OTHERS")){
+                    currTotal = timeInHours * curSpot.getPricePerHour();
+                }
+                if(currTotal != 0 && currTotal < totalPrice){
+                    totalPrice = currTotal;
+                    spot = curSpot;
+                }
+            }
+        }
+
+        if(spot == null){
+            throw new Exception("Cannot make reservation");
+        }
+
+        // now make Reservation
+        Reservation reservation = new Reservation();
+        reservation.setNumberOfHours(timeInHours);
+        reservation.setUser(user);
+        reservation.setSpot(spot);
+        spot.setOccupied(true);
+
+        user.getReservationList().add(reservation);
+        spot.getReservationList().add(reservation);
+
+        reservationRepository3.save(reservation);
+        return reservation;
     }
 }

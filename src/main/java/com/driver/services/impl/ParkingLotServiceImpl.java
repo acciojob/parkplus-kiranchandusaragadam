@@ -1,6 +1,7 @@
 package com.driver.services.impl;
 
-import com.driver.model.SpotType;
+import com.driver.model.*;
+import com.driver.model.Spot;
 import com.driver.repository.ParkingLotRepository;
 import com.driver.repository.SpotRepository;
 import com.driver.services.ParkingLotService;
@@ -18,26 +19,53 @@ public class ParkingLotServiceImpl implements ParkingLotService {
     SpotRepository spotRepository1;
     @Override
     public ParkingLot addParkingLot(String name, String address) {
-
+        ParkingLot parkingLot = new ParkingLot();
+        parkingLot.setName(name);
+        parkingLot.setAddress(address);
+        return parkingLotRepository1.save(parkingLot);
     }
 
     @Override
     public Spot addSpot(int parkingLotId, Integer numberOfWheels, Integer pricePerHour) {
+        Spot spot = new Spot();
+        SpotType spotType = null;
+        if(numberOfWheels == 2){
+            spotType = SpotType.TWO_WHEELER;
+        }
+        else if(numberOfWheels == 4){
+            spotType = SpotType.FOUR_WHEELER;
+        }
+        else{
+            spotType = SpotType.OTHERS;
+        }
+        spot.setPricePerHour(pricePerHour);
+        spot.setSpotType(spotType);
 
+        // get parking lot by id
+        ParkingLot parkingLot = parkingLotRepository1.findById(parkingLotId).get();
+        spot.setParkingLot(parkingLot);
+
+        // now add this spot to given parking lot
+        parkingLot.getSpotList().add(spot);
+        parkingLotRepository1.save(parkingLot);
+
+        return spot;
     }
 
     @Override
     public void deleteSpot(int spotId) {
-
+        spotRepository1.deleteById(spotId);
     }
 
     @Override
     public Spot updateSpot(int parkingLotId, int spotId, int pricePerHour) {
-
+        Spot spot = spotRepository1.findById(spotId).get();
+        spot.setPricePerHour(pricePerHour);
+        return spotRepository1.save(spot);
     }
 
     @Override
     public void deleteParkingLot(int parkingLotId) {
-
+        parkingLotRepository1.deleteById(parkingLotId);
     }
 }
