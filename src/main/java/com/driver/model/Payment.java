@@ -30,7 +30,7 @@ public class Payment {
         this.id = id;
     }
 
-    public boolean getPaymentCompleted() {
+    public boolean isPaymentCompleted() {
         return paymentCompleted;
     }
 

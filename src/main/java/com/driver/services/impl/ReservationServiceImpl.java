@@ -37,7 +37,7 @@ public class ReservationServiceImpl implements ReservationService {
         int totalPrice = Integer.MAX_VALUE;
 
         for(Spot curSpot : spotList){
-            if(!curSpot.getOccupied()){
+            if(!curSpot.isOccupied()){
                 int currTotal = 0;
                 if(numberOfWheels == 2){
                     currTotal = timeInHours * curSpot.getPricePerHour();
